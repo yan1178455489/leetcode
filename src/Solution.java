@@ -8,6 +8,7 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 /**
  * Created by worker on 2018/4/25.
@@ -17,17 +18,7 @@ public class Solution {
     public static final int[][] go = {
             {0, 1}, {1, 0}
     };
-    //    public void backtrack(List<List<Integer>> ans,List<Integer> templist,int[] nums,int remain,int start){
-//        if(remain<0) return;
-//        if(remain==0) ans.add(new ArrayList<>(templist));
-//        else{
-//            for(int i=start;i<nums.length;i++){
-//                templist.add(nums[i]);
-//                backtrack(ans,templist,nums,remain-nums[i],i+1);
-//                templist.remove(templist.size()-1);
-//            }
-//        }
-//    }
+
     public static int ans = 0;
     public int[][] go1 = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
     int maxSum;
@@ -41,18 +32,21 @@ public class Solution {
         Interval merged = new Interval(mergeStart, mergeEnd);
         return span(merged) > span(first) + span(second) ? null : merged;
     }
-//    public boolean isValidBST(TreeNode root) {
-//        if(root==null){
-//            Long.
-//            return true;
-//        }
-//        if((root.left!=null&&root.left.val<root.val)||root.left==null){
-//            if((root.right!=null&&root.right.val>root.val)||root.right==null){
-//                return isValidBST(root.left)&&isValidBST(root.right);
-//            }
-//        }
-//        return false;
-//    }
+
+    public void backtrack(List<List<Integer>> ans,List<Integer> templist,int[] nums,int remain,int start){
+        if(remain<0) {
+            return;
+        }
+        if(remain==0) {
+            ans.add(new ArrayList<>(templist));
+        } else{
+            for(int i=start;i<nums.length;i++){
+                templist.add(nums[i]);
+                backtrack(ans,templist,nums,remain-nums[i],i+1);
+                templist.remove(templist.size()-1);
+            }
+        }
+    }
 
     static int span(Interval i) {
         return i.end - i.start;
@@ -64,27 +58,6 @@ public class Solution {
 
     static boolean strictlyBetween(int i, int from, int to) {
         return from < i && i < to;
-    }
-
-    public static void main(String[] args) {
-        Solution sol = new Solution();
-        int[][] dungeon = {{0, -3}};
-        int[] price = {0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1};
-        char[][] board = {
-                {'5', '3', '.', '.', '7', '.', '.', '.', '.'},
-                {'6', '.', '.', '1', '9', '5', '.', '.', '.'},
-                {'.', '9', '8', '.', '.', '.', '.', '6', '.'},
-                {'8', '.', '.', '.', '6', '.', '.', '.', '3'},
-                {'4', '.', '.', '8', '.', '3', '.', '.', '1'},
-                {'7', '.', '.', '.', '2', '.', '.', '.', '6'},
-                {'.', '6', '.', '.', '.', '.', '2', '8', '.'},
-                {'.', '.', '.', '4', '1', '9', '.', '.', '5'},
-                {'.', '.', '.', '.', '8', '.', '.', '7', '9'},
-        };
-//        sol.combinationSum(price,7);
-        System.out.println(sol.trap(price));
-//        System.out.println(fatherList.get(0).get(0));
-//        System.out.println(fatherList.get(0).get(1));
     }
 
     public void dfs(int[][] maze, int m, int n, int x, int y) {
@@ -1284,10 +1257,6 @@ public class Solution {
         return maxA;
     }
 
-    //    public int[] twoSum(int[] nums, int target) {
-//        HashMap<Integer,Integer> numss = new HashMap<Integer,Integer>();
-//
-//    }
     public List<List<Integer>> threeSum(int[] nums, List<List<Integer>> ans, int target, int start) {
         if (nums.length < 3) {
             return ans;
@@ -2512,5 +2481,49 @@ public class Solution {
             flag = 0;
         }
         return area;
+    }
+
+    private Set<List<Integer>> twoSum(int[] nums, int start, int end, int target) {
+        Set<List<Integer>> res = new HashSet<>();
+        while (start < end) {
+            if (nums[start] + nums[end] == target) {
+                res.add(Arrays.asList(nums[start], nums[end]));
+                start++;
+                end--;
+            } else if (nums[start] + nums[end] < target) {
+                start++;
+            } else {
+                end--;
+            }
+        }
+        return res;
+    }
+
+    public List<List<Integer>> threeSum(int[] nums) {
+        int length = nums.length;
+        List<List<Integer>> res = new ArrayList<>();
+        if (length < 3) {
+            return res;
+        }
+        Arrays.sort(nums);
+
+        for (int i = 0; i < length; i++) {
+            if (i > 0 && nums[i] == nums[i-1]) {
+                continue;
+            }
+            Set<List<Integer>> subRes = twoSum(nums, i + 1, length - 1, -nums[i]);
+            for (List<Integer> subList : subRes) {
+                ArrayList<Integer> newList = new ArrayList<>(subList);
+                newList.add(0, nums[i]);
+                res.add(newList);
+            }
+        }
+        return res;
+    }
+
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        List<List<Integer>> lists = sol.threeSum(new int[]{-1, 0, 1});
+        System.out.println(lists);
     }
 }
